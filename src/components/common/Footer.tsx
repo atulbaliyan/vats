@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Instagram, Twitter, Youtube, Check } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,18 +19,19 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-12 border-b border-vats-border">
           {/* Col 1: Brand & Identity (4 cols) */}
           <div className="lg:col-span-4 space-y-5">
-            <Link to="/" className="flex items-center gap-2 group inline-block">
-              <div className="w-9 h-9 bg-vats-charcoal border border-vats-border flex items-center justify-center font-display text-2xl text-vats-lime group-hover:border-vats-lime transition-colors">
-                <span className="skew-x-[-12deg]">V</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display text-3xl tracking-wider leading-none text-vats-offwhite">
-                  VATS<span className="text-vats-lime">.</span>SPORTS
-                </span>
-                <span className="text-[10px] uppercase tracking-ultra text-vats-muted font-bold">
-                  BEYOND LIMITS
-                </span>
-              </div>
+            <Link
+              to="/"
+              className="inline-block group focus:outline-none focus-visible:ring-2 focus-visible:ring-vats-lime rounded-sm transition-transform duration-200 active:scale-95"
+            >
+              <BrandLogo
+                variant="full"
+                theme="dark"
+                className="h-10 sm:h-11 w-auto"
+                alt="VATS SPORTS"
+              />
+              <span className="block text-[10px] uppercase tracking-ultra text-vats-muted font-bold mt-2">
+                BEYOND LIMITS
+              </span>
             </Link>
 
             <p className="text-xs text-vats-muted leading-relaxed max-w-sm">
