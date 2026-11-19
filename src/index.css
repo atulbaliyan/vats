@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: #0B0B0B;
+    color: #F5F5F2;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0B0B0B;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2A2A2A;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #C7FF35;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Bebas Neue', 'Anton', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(199, 255, 53, 0.4);
+  }
+
+  .bg-radial-gradient {
+    background: radial-gradient(circle at 50% 20%, rgba(199, 255, 53, 0.08) 0%, rgba(11, 11, 11, 0) 70%);
+  }
+}
+
+/* Lenis smooth scroll recommended CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !true;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
