@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Zap, Activity } from 'lucide-react';
-import { gsap, ScrollTrigger } from '../../animations/scrollSync';
+import { gsap } from '../../animations/scrollSync';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 export const BrandStory: React.FC = () => {
