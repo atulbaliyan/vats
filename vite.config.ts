@@ -3,7 +3,24 @@ import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  base: '/vats/',
+  plugins: [
+    react(),
+    {
+      name: 'preview-redirect-to-base',
+      configurePreviewServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url && !req.url.startsWith('/vats')) {
+            const redirectUrl = `/vats${req.url.startsWith('/') ? req.url : `/${req.url}`}`;
+            res.writeHead(302, { Location: redirectUrl });
+            res.end();
+            return;
+          }
+          next();
+        });
+      },
+    },
+  ],
   build: {
     rollupOptions: {
       output: {
