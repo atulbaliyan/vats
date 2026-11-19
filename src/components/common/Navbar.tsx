@@ -5,10 +5,10 @@ import { NAV_LINKS, NavCategory } from '../../data/navigation';
 import { useCartStore } from '../../store/useCartStore';
 import { useWishlistStore } from '../../store/useWishlistStore';
 import { useUIStore } from '../../store/useUIStore';
+import { useMegaMenu } from '../../hooks/useMegaMenu';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const location = useLocation();
 
   const totalCartCount = useCartStore((s) => s.getTotalCount());
@@ -16,6 +16,19 @@ export const Navbar: React.FC = () => {
   const isMobileMenuOpen = useUIStore((s) => s.isMobileMenuOpen);
   const wishlistCount = useWishlistStore((s) => s.wishlistIds.length);
   const toggleMobileMenu = useUIStore((s) => s.toggleMobileMenu);
+
+  const {
+    activeMenu,
+    openMode,
+    navRef,
+    registerTriggerRef,
+    closeMenu,
+    handleTriggerClick,
+    handleItemPointerEnter,
+    handleItemPointerLeave,
+    handleTriggerKeyDown,
+    handleSubmenuLinkClick,
+  } = useMegaMenu({ hoverCloseDelayMs: 3000 });
 
   const isHome = location.pathname === '/';
 
@@ -33,8 +46,8 @@ export const Navbar: React.FC = () => {
 
   // Close dropdown on route change
   useEffect(() => {
-    setActiveDropdown(null);
-  }, [location.pathname]);
+    closeMenu();
+  }, [location.pathname, closeMenu]);
 
   return (
     <header
@@ -82,111 +95,151 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Center: Desktop Navigation Links with Mega Menu */}
-          <nav className="hidden lg:flex items-center space-x-1" aria-label="Main Store Navigation">
-            {NAV_LINKS.map((nav: NavCategory) => (
-              <div
-                key={nav.title}
-                className="relative"
-                onMouseEnter={() => nav.sections && setActiveDropdown(nav.title)}
-                onMouseLeave={() => setActiveDropdown(null)}
-                onFocus={() => nav.sections && setActiveDropdown(nav.title)}
-                onBlur={(e) => {
-                  if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                    setActiveDropdown(null);
-                  }
-                }}
-              >
-                <Link
-                  to={nav.href}
-                  className={`px-4 py-2 text-sm font-semibold tracking-wider uppercase transition-colors relative flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm ${
-                    location.pathname === nav.href || location.pathname.startsWith(nav.href + '/')
-                      ? 'text-vats-lime'
-                      : 'text-vats-offwhite/90 hover:text-vats-lime'
-                  }`}
-                  aria-expanded={nav.sections ? activeDropdown === nav.title : undefined}
+          <nav ref={navRef as React.RefObject<HTMLElement>} className="hidden lg:flex items-center space-x-1" aria-label="Main Store Navigation">
+            {NAV_LINKS.map((nav: NavCategory) => {
+              const hasSections = Boolean(nav.sections && nav.sections.length > 0);
+              const isOpen = activeMenu === nav.title;
+              const menuId = `mega-menu-${nav.title.toLowerCase()}`;
+              const triggerId = `nav-trigger-${nav.title.toLowerCase()}`;
+              const isCurrentRoute =
+                location.pathname === nav.href || location.pathname.startsWith(nav.href + '/');
+
+              return (
+                <div
+                  key={nav.title}
+                  className="relative"
+                  onMouseEnter={() => hasSections && handleItemPointerEnter(nav.title)}
+                  onMouseLeave={() => hasSections && handleItemPointerLeave()}
+                  onFocus={() => hasSections && handleItemPointerEnter(nav.title)}
+                  onBlur={(e) => {
+                    if (hasSections && !e.currentTarget.contains(e.relatedTarget as Node)) {
+                      if (openMode === 'hover') {
+                        closeMenu();
+                      }
+                    }
+                  }}
                 >
-                  {nav.title}
-                  {nav.badge && (
-                    <span className="bg-vats-lime text-vats-black text-[9px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
-                      {nav.badge}
-                    </span>
-                  )}
-                </Link>
-
-                {/* Desktop Mega Menu Dropdown */}
-                {nav.sections && activeDropdown === nav.title && (
-                  <div
-                    className="absolute top-full left-1/2 -translate-x-1/2 w-[680px] bg-vats-surface/95 backdrop-blur-xl border border-vats-border p-6 shadow-2xl transition-all duration-200 mt-2 rounded-sm"
-                    role="region"
-                    aria-label={`${nav.title} subcategories navigation`}
-                  >
-                    <div className="grid grid-cols-12 gap-6">
-                      {/* Nav Links Column */}
-                      <div className="col-span-7 grid grid-cols-2 gap-6">
-                        {nav.sections.map((sec, idx) => (
-                          <div key={idx} className="space-y-3">
-                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-vats-muted border-b border-vats-border/50 pb-1">
-                              {sec.heading}
-                            </h4>
-                            <ul className="space-y-2">
-                              {sec.items.map((item, itemIdx) => (
-                                <li key={itemIdx}>
-                                  <Link
-                                    to={item.href}
-                                    className="text-xs text-vats-offwhite/80 hover:text-vats-lime transition-colors flex items-center justify-between group focus-visible:ring-1 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
-                                  >
-                                    <span className="group-hover:translate-x-0.5 transition-transform">
-                                      {item.label}
-                                    </span>
-                                    {item.tag && (
-                                      <span className="text-[9px] text-vats-lime bg-vats-lime/10 px-1.5 py-0.5 rounded font-mono">
-                                        {item.tag}
-                                      </span>
-                                    )}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Featured Promo Card Column */}
-                      {nav.featuredPromo && (
-                        <div className="col-span-5 relative group overflow-hidden rounded-sm bg-vats-charcoal border border-vats-border flex flex-col justify-end p-4 min-h-[200px]">
-                          <img
-                            src={nav.featuredPromo.image}
-                            alt=""
-                            width={300}
-                            height={250}
-                            className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 group-hover:opacity-60 transition-all duration-500"
-                            loading="lazy"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-vats-black via-vats-black/50 to-transparent" />
-                          <div className="relative z-10 space-y-1">
-                            <span className="text-[10px] uppercase font-mono text-vats-lime tracking-widest font-semibold">
-                              Featured Drop
-                            </span>
-                            <h5 className="font-display text-lg leading-tight text-white">
-                              {nav.featuredPromo.title}
-                            </h5>
-                            <p className="text-[11px] text-vats-muted line-clamp-2">
-                              {nav.featuredPromo.subtitle}
-                            </p>
-                            <Link
-                              to={nav.featuredPromo.href}
-                              className="inline-flex items-center gap-1 text-xs text-vats-lime font-bold tracking-wider uppercase pt-2 group-hover:underline focus-visible:ring-1 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
-                            >
-                              {nav.featuredPromo.cta} <ArrowRight className="w-3 h-3" />
-                            </Link>
-                          </div>
-                        </div>
+                  {hasSections ? (
+                    <button
+                      type="button"
+                      id={triggerId}
+                      ref={registerTriggerRef(nav.title)}
+                      onClick={() => handleTriggerClick(nav.title)}
+                      onKeyDown={(e) => handleTriggerKeyDown(e, nav.title)}
+                      aria-expanded={isOpen}
+                      aria-haspopup="true"
+                      aria-controls={isOpen ? menuId : undefined}
+                      className={`px-4 py-2 text-sm font-semibold tracking-wider uppercase transition-colors relative flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm ${
+                        isOpen || isCurrentRoute
+                          ? 'text-vats-lime'
+                          : 'text-vats-offwhite/90 hover:text-vats-lime'
+                      }`}
+                    >
+                      {nav.title}
+                      {nav.badge && (
+                        <span className="bg-vats-lime text-vats-black text-[9px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
+                          {nav.badge}
+                        </span>
                       )}
+                    </button>
+                  ) : (
+                    <Link
+                      to={nav.href}
+                      className={`px-4 py-2 text-sm font-semibold tracking-wider uppercase transition-colors relative flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm ${
+                        isCurrentRoute
+                          ? 'text-vats-lime'
+                          : 'text-vats-offwhite/90 hover:text-vats-lime'
+                      }`}
+                    >
+                      {nav.title}
+                      {nav.badge && (
+                        <span className="bg-vats-lime text-vats-black text-[9px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
+                          {nav.badge}
+                        </span>
+                      )}
+                    </Link>
+                  )}
+
+                  {/* Desktop Mega Menu Dropdown */}
+                  {hasSections && isOpen && (
+                    <div
+                      id={menuId}
+                      role="region"
+                      aria-label={`${nav.title} subcategories navigation`}
+                      className="absolute top-full left-1/2 -translate-x-1/2 w-[680px] pt-2 z-50 before:absolute before:-top-3 before:left-0 before:right-0 before:h-3 before:content-['']"
+                    >
+                      <div className="bg-vats-surface/95 backdrop-blur-xl border border-vats-border p-6 shadow-2xl rounded-sm transition-all duration-200">
+                        <div className="grid grid-cols-12 gap-6">
+                          {/* Nav Links Column */}
+                          <div className="col-span-7 grid grid-cols-2 gap-6">
+                            {nav.sections!.map((sec, idx) => (
+                              <div key={idx} className="space-y-3">
+                                <h4 className="text-[11px] font-bold uppercase tracking-widest text-vats-muted border-b border-vats-border/50 pb-1">
+                                  {sec.heading}
+                                </h4>
+                                <ul className="space-y-2">
+                                  {sec.items.map((item, itemIdx) => (
+                                    <li key={itemIdx}>
+                                      <Link
+                                        to={item.href}
+                                        onClick={handleSubmenuLinkClick}
+                                        className="text-xs text-vats-offwhite/80 hover:text-vats-lime transition-colors flex items-center justify-between group focus-visible:ring-1 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
+                                      >
+                                        <span className="group-hover:translate-x-0.5 transition-transform">
+                                          {item.label}
+                                        </span>
+                                        {item.tag && (
+                                          <span className="text-[9px] text-vats-lime bg-vats-lime/10 px-1.5 py-0.5 rounded font-mono">
+                                            {item.tag}
+                                          </span>
+                                        )}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Featured Promo Card Column */}
+                          {nav.featuredPromo && (
+                            <div className="col-span-5 relative group overflow-hidden rounded-sm bg-vats-charcoal border border-vats-border flex flex-col justify-end p-4 min-h-[200px]">
+                              <img
+                                src={nav.featuredPromo.image}
+                                alt=""
+                                width={300}
+                                height={250}
+                                className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 group-hover:opacity-60 transition-all duration-500"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-vats-black via-vats-black/50 to-transparent" />
+                              <div className="relative z-10 space-y-1">
+                                <span className="text-[10px] uppercase font-mono text-vats-lime tracking-widest font-semibold">
+                                  Featured Drop
+                                </span>
+                                <h5 className="font-display text-lg leading-tight text-white">
+                                  {nav.featuredPromo.title}
+                                </h5>
+                                <p className="text-[11px] text-vats-muted line-clamp-2">
+                                  {nav.featuredPromo.subtitle}
+                                </p>
+                                <Link
+                                  to={nav.featuredPromo.href}
+                                  onClick={handleSubmenuLinkClick}
+                                  className="inline-flex items-center gap-1 text-xs text-vats-lime font-bold tracking-wider uppercase pt-2 group-hover:underline focus-visible:ring-1 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
+                                >
+                                  {nav.featuredPromo.cta} <ArrowRight className="w-3 h-3" />
+                                </Link>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
           {/* Right: Actions (Search, Wishlist, Cart) */}
