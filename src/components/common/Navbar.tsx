@@ -13,6 +13,7 @@ export const Navbar: React.FC = () => {
 
   const totalCartCount = useCartStore((s) => s.getTotalCount());
   const openCartDrawer = useCartStore((s) => s.openDrawer);
+  const isMobileMenuOpen = useUIStore((s) => s.isMobileMenuOpen);
   const wishlistCount = useWishlistStore((s) => s.wishlistIds.length);
   const openSearch = useUIStore((s) => s.openSearch);
   const toggleMobileMenu = useUIStore((s) => s.toggleMobileMenu);
@@ -51,15 +52,17 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={toggleMobileMenu}
-              className="lg:hidden p-2 text-vats-offwhite hover:text-vats-lime transition-colors"
+              className="lg:hidden p-2 text-vats-offwhite hover:text-vats-lime transition-colors focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
               aria-label="Open mobile navigation menu"
+              aria-expanded={isMobileMenuOpen}
             >
               <Menu className="w-6 h-6" />
             </button>
 
             <Link
               to="/"
-              className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-vats-lime"
+              className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-vats-lime rounded-sm"
+              aria-label="VATS SPORTS Home"
             >
               {/* Dynamic Logo Symbol */}
               <div className="w-8 h-8 bg-vats-charcoal border border-vats-border flex items-center justify-center font-display text-xl text-vats-lime group-hover:border-vats-lime transition-colors">
@@ -77,21 +80,28 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Center: Desktop Navigation Links with Mega Menu */}
-          <nav className="hidden lg:flex items-center space-x-1" aria-label="Main Navigation">
+          <nav className="hidden lg:flex items-center space-x-1" aria-label="Main Store Navigation">
             {NAV_LINKS.map((nav: NavCategory) => (
               <div
                 key={nav.title}
                 className="relative"
                 onMouseEnter={() => nav.sections && setActiveDropdown(nav.title)}
                 onMouseLeave={() => setActiveDropdown(null)}
+                onFocus={() => nav.sections && setActiveDropdown(nav.title)}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                    setActiveDropdown(null);
+                  }
+                }}
               >
                 <Link
                   to={nav.href}
-                  className={`px-4 py-2 text-sm font-semibold tracking-wider uppercase transition-colors relative flex items-center gap-1.5 ${
+                  className={`px-4 py-2 text-sm font-semibold tracking-wider uppercase transition-colors relative flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm ${
                     location.pathname === nav.href || location.pathname.startsWith(nav.href + '/')
                       ? 'text-vats-lime'
                       : 'text-vats-offwhite/90 hover:text-vats-lime'
                   }`}
+                  aria-expanded={nav.sections ? activeDropdown === nav.title : undefined}
                 >
                   {nav.title}
                   {nav.badge && (
@@ -106,7 +116,7 @@ export const Navbar: React.FC = () => {
                   <div
                     className="absolute top-full left-1/2 -translate-x-1/2 w-[680px] bg-vats-surface/95 backdrop-blur-xl border border-vats-border p-6 shadow-2xl transition-all duration-200 mt-2 rounded-sm"
                     role="region"
-                    aria-label={`${nav.title} mega menu`}
+                    aria-label={`${nav.title} subcategories navigation`}
                   >
                     <div className="grid grid-cols-12 gap-6">
                       {/* Nav Links Column */}
@@ -121,7 +131,7 @@ export const Navbar: React.FC = () => {
                                 <li key={itemIdx}>
                                   <Link
                                     to={item.href}
-                                    className="text-xs text-vats-offwhite/80 hover:text-vats-lime transition-colors flex items-center justify-between group"
+                                    className="text-xs text-vats-offwhite/80 hover:text-vats-lime transition-colors flex items-center justify-between group focus-visible:ring-1 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
                                   >
                                     <span className="group-hover:translate-x-0.5 transition-transform">
                                       {item.label}
@@ -144,7 +154,9 @@ export const Navbar: React.FC = () => {
                         <div className="col-span-5 relative group overflow-hidden rounded-sm bg-vats-charcoal border border-vats-border flex flex-col justify-end p-4 min-h-[200px]">
                           <img
                             src={nav.featuredPromo.image}
-                            alt={nav.featuredPromo.title}
+                            alt=""
+                            width={300}
+                            height={250}
                             className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 group-hover:opacity-60 transition-all duration-500"
                             loading="lazy"
                           />
@@ -161,7 +173,7 @@ export const Navbar: React.FC = () => {
                             </p>
                             <Link
                               to={nav.featuredPromo.href}
-                              className="inline-flex items-center gap-1 text-xs text-vats-lime font-bold tracking-wider uppercase pt-2 group-hover:underline"
+                              className="inline-flex items-center gap-1 text-xs text-vats-lime font-bold tracking-wider uppercase pt-2 group-hover:underline focus-visible:ring-1 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
                             >
                               {nav.featuredPromo.cta} <ArrowRight className="w-3 h-3" />
                             </Link>
@@ -180,7 +192,7 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={openSearch}
-              className="p-2 text-vats-offwhite hover:text-vats-lime transition-colors relative"
+              className="p-2 text-vats-offwhite hover:text-vats-lime transition-colors relative focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
               aria-label="Search store products"
               title="Search products"
             >
@@ -189,8 +201,8 @@ export const Navbar: React.FC = () => {
 
             <Link
               to="/wishlist"
-              className="p-2 text-vats-offwhite hover:text-vats-lime transition-colors relative"
-              aria-label={`Wishlist with ${wishlistCount} items`}
+              className="p-2 text-vats-offwhite hover:text-vats-lime transition-colors relative focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
+              aria-label={`Wishlist, ${wishlistCount} saved items`}
               title="Saved items"
             >
               <Heart className="w-5 h-5" />
@@ -204,8 +216,8 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={openCartDrawer}
-              className="p-2 text-vats-offwhite hover:text-vats-lime transition-colors relative group"
-              aria-label={`Shopping cart with ${totalCartCount} items`}
+              className="p-2 text-vats-offwhite hover:text-vats-lime transition-colors relative group focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
+              aria-label={`Shopping bag, ${totalCartCount} items`}
               title="View shopping bag"
             >
               <ShoppingBag className="w-5 h-5 group-hover:scale-105 transition-transform" />

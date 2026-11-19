@@ -13,7 +13,8 @@ export default defineConfig({
               id.includes('react') ||
               id.includes('react-dom') ||
               id.includes('react-router-dom') ||
-              id.includes('scheduler')
+              id.includes('scheduler') ||
+              id.includes('@radix-ui')
             ) {
               return 'vendor-react';
             }

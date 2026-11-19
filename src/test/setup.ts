@@ -17,3 +17,10 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock window.scrollTo
 window.scrollTo = () => {};
+
+// Mock ResizeObserver for Radix UI dialogs
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};

@@ -10,7 +10,6 @@ import {
   Truck,
   RotateCcw,
   Ruler,
-  X,
   Share2,
 } from 'lucide-react';
 import { PRODUCTS } from '../data/products';
@@ -20,6 +19,7 @@ import { useCartStore } from '../store/useCartStore';
 import { useWishlistStore } from '../store/useWishlistStore';
 import { useUIStore } from '../store/useUIStore';
 import { ProductCard } from '../components/products/ProductCard';
+import { AccessibleModal } from '../components/ui/Dialog';
 
 export const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -202,25 +202,36 @@ export const ProductDetailPage: React.FC = () => {
 
             {/* Colors */}
             <div className="space-y-2 border-t border-vats-border pt-4">
-              <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block">
+              <span id="detail-color-label" className="text-xs font-bold uppercase tracking-wider text-vats-muted block">
                 Selected Color: <strong className="text-vats-offwhite">{selectedColor}</strong>
-              </label>
-              <div className="flex gap-2.5">
+              </span>
+              <div
+                role="radiogroup"
+                aria-labelledby="detail-color-label"
+                className="flex gap-2.5"
+              >
                 {product.colors.map((c) => (
                   <button
                     key={c.name}
                     type="button"
+                    role="radio"
+                    aria-checked={selectedColor === c.name}
+                    aria-label={`Color option: ${c.name}`}
                     onClick={() => setSelectedColor(c.name)}
-                    className={`w-9 h-9 rounded-full border-2 transition-all p-0.5 flex items-center justify-center ${
+                    className={`w-9 h-9 rounded-full border-2 transition-all p-0.5 flex items-center justify-center focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none ${
                       selectedColor === c.name
                         ? 'border-vats-lime scale-110'
                         : 'border-vats-border hover:border-vats-muted'
                     }`}
                     style={{ backgroundColor: c.hex }}
-                    title={c.name}
                   >
                     {selectedColor === c.name && (
-                      <Check className={`w-4 h-4 ${c.hex === '#FFFFFF' || c.hex === '#C7FF35' ? 'text-black' : 'text-white'}`} />
+                      <Check
+                        className={`w-4 h-4 ${
+                          c.hex === '#FFFFFF' || c.hex === '#C7FF35' ? 'text-black' : 'text-white'
+                        }`}
+                        aria-hidden="true"
+                      />
                     )}
                   </button>
                 ))}
@@ -230,24 +241,31 @@ export const ProductDetailPage: React.FC = () => {
             {/* Sizes */}
             <div className="space-y-2 border-t border-vats-border pt-4">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold uppercase tracking-wider text-vats-muted">
+                <span id="detail-size-label" className="text-xs font-bold uppercase tracking-wider text-vats-muted">
                   Select Size
-                </label>
+                </span>
                 <button
                   type="button"
                   onClick={() => setIsSizeGuideOpen(true)}
-                  className="text-xs text-vats-lime hover:underline flex items-center gap-1 font-medium"
+                  className="text-xs text-vats-lime hover:underline flex items-center gap-1 font-medium focus-visible:ring-1 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
                 >
-                  <Ruler className="w-3.5 h-3.5" /> Size Guide
+                  <Ruler className="w-3.5 h-3.5" aria-hidden="true" /> Size Guide
                 </button>
               </div>
-              <div className="grid grid-cols-5 gap-2">
+              <div
+                role="radiogroup"
+                aria-labelledby="detail-size-label"
+                className="grid grid-cols-5 gap-2"
+              >
                 {product.sizes.map((s) => (
                   <button
                     key={s}
                     type="button"
+                    role="radio"
+                    aria-checked={selectedSize === s}
+                    aria-label={`Size ${s}`}
                     onClick={() => setSelectedSize(s)}
-                    className={`py-3 text-xs font-mono font-bold uppercase border transition-all rounded-sm ${
+                    className={`py-3 text-xs font-mono font-bold uppercase border transition-all rounded-sm focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none ${
                       selectedSize === s
                         ? 'border-vats-lime bg-vats-lime text-vats-black'
                         : 'border-vats-border bg-vats-surface text-vats-offwhite hover:border-vats-muted'
@@ -393,51 +411,42 @@ export const ProductDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Size Guide Modal */}
-        {isSizeGuideOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
-              onClick={() => setIsSizeGuideOpen(false)}
-            />
-            <div className="relative bg-vats-surface border border-vats-border w-full max-w-lg p-6 rounded-sm z-10 space-y-4">
-              <div className="flex justify-between items-center border-b border-vats-border pb-3">
-                <h3 className="font-display text-2xl text-vats-offwhite tracking-wider">
-                  VATS SIZE GUIDE (INCHES)
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setIsSizeGuideOpen(false)}
-                  className="p-1 text-vats-muted hover:text-white"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="overflow-x-auto text-xs">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-vats-border text-vats-lime font-mono">
-                      <th className="py-2">Size</th>
-                      <th className="py-2">Chest</th>
-                      <th className="py-2">Waist</th>
-                      <th className="py-2">Length</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-vats-border/50 text-vats-offwhite/90">
-                    <tr><td className="py-2 font-bold font-mono">S</td><td>36 - 38"</td><td>28 - 30"</td><td>27.5"</td></tr>
-                    <tr><td className="py-2 font-bold font-mono">M</td><td>39 - 41"</td><td>31 - 33"</td><td>28.5"</td></tr>
-                    <tr><td className="py-2 font-bold font-mono">L</td><td>42 - 44"</td><td>34 - 36"</td><td>29.5"</td></tr>
-                    <tr><td className="py-2 font-bold font-mono">XL</td><td>45 - 47"</td><td>37 - 39"</td><td>30.5"</td></tr>
-                    <tr><td className="py-2 font-bold font-mono">XXL</td><td>48 - 50"</td><td>40 - 42"</td><td>31.5"</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-[11px] text-vats-muted">
-                Fits true to athletic performance size. For an oversized streetwear aesthetic, consider sizing up one size.
-              </p>
+        {/* Size Guide Accessible Modal */}
+        <AccessibleModal
+          isOpen={isSizeGuideOpen}
+          onClose={() => setIsSizeGuideOpen(false)}
+          title="VATS Size Guide (Inches)"
+          description="Sizing measurement charts in inches for athletic fit"
+          maxWidthClassName="max-w-lg"
+        >
+          <div className="p-6 space-y-4">
+            <h2 className="font-display text-2xl text-vats-offwhite tracking-wider border-b border-vats-border pb-3">
+              VATS SIZE GUIDE (INCHES)
+            </h2>
+            <div className="overflow-x-auto text-xs">
+              <table className="w-full text-left border-collapse" aria-label="Body measurement size guide">
+                <thead>
+                  <tr className="border-b border-vats-border text-vats-lime font-mono">
+                    <th scope="col" className="py-2">Size</th>
+                    <th scope="col" className="py-2">Chest</th>
+                    <th scope="col" className="py-2">Waist</th>
+                    <th scope="col" className="py-2">Length</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-vats-border/50 text-vats-offwhite/90">
+                  <tr><th scope="row" className="py-2 font-bold font-mono">S</th><td>36 - 38"</td><td>28 - 30"</td><td>27.5"</td></tr>
+                  <tr><th scope="row" className="py-2 font-bold font-mono">M</th><td>39 - 41"</td><td>31 - 33"</td><td>28.5"</td></tr>
+                  <tr><th scope="row" className="py-2 font-bold font-mono">L</th><td>42 - 44"</td><td>34 - 36"</td><td>29.5"</td></tr>
+                  <tr><th scope="row" className="py-2 font-bold font-mono">XL</th><td>45 - 47"</td><td>37 - 39"</td><td>30.5"</td></tr>
+                  <tr><th scope="row" className="py-2 font-bold font-mono">XXL</th><td>48 - 50"</td><td>40 - 42"</td><td>31.5"</td></tr>
+                </tbody>
+              </table>
             </div>
+            <p className="text-[11px] text-vats-muted">
+              Fits true to athletic performance size. For an oversized streetwear aesthetic, consider sizing up one size.
+            </p>
           </div>
-        )}
+        </AccessibleModal>
 
         {/* Related Products Section */}
         {relatedProducts.length > 0 && (

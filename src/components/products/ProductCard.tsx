@@ -122,7 +122,8 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
             type="button"
             onClick={handleQuickAdd}
             disabled={isQuickAdded}
-            className={`flex-1 py-2.5 px-3 rounded-sm text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${
+            aria-label={`Quick add ${product.name} to shopping bag`}
+            className={`flex-1 py-2.5 px-3 rounded-sm text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none ${
               isQuickAdded
                 ? 'bg-emerald-500 text-white'
                 : 'bg-vats-lime hover:bg-vats-limeHover text-vats-black shadow-md'
@@ -130,22 +131,22 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
           >
             {isQuickAdded ? (
               <>
-                <Check className="w-3.5 h-3.5" /> Added
+                <Check className="w-3.5 h-3.5" aria-hidden="true" /> Added
               </>
             ) : (
               <>
-                <ShoppingBag className="w-3.5 h-3.5" /> Quick Add
+                <ShoppingBag className="w-3.5 h-3.5" aria-hidden="true" /> Quick Add
               </>
             )}
           </button>
           <button
             type="button"
             onClick={handleQuickView}
-            className="p-2.5 bg-vats-charcoal hover:bg-vats-border text-vats-offwhite rounded-sm transition-colors border border-vats-border"
+            className="p-2.5 bg-vats-charcoal hover:bg-vats-border text-vats-offwhite rounded-sm transition-colors border border-vats-border focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none"
             title="Quick View Modal"
-            aria-label={`Quick View ${product.name}`}
+            aria-label={`Quick View details for ${product.name}`}
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       </Link>
@@ -162,7 +163,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
           {/* Product Name */}
           <Link
             to={`/product/${product.slug}`}
-            className="font-bold text-sm text-vats-offwhite hover:text-vats-lime transition-colors line-clamp-1 block"
+            className="font-bold text-sm text-vats-offwhite hover:text-vats-lime transition-colors line-clamp-1 block focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
           >
             {product.name}
           </Link>
@@ -210,9 +211,10 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
         <button
           type="button"
           onClick={handleQuickAdd}
-          className="sm:hidden w-full mt-2 py-2 bg-vats-charcoal border border-vats-border text-vats-offwhite text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 rounded-sm"
+          aria-label={`Quick add ${product.name} to shopping bag`}
+          className="sm:hidden w-full mt-2 py-2 bg-vats-charcoal border border-vats-border text-vats-offwhite text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 rounded-sm focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none"
         >
-          <ShoppingBag className="w-3.5 h-3.5 text-vats-lime" /> Quick Add
+          <ShoppingBag className="w-3.5 h-3.5 text-vats-lime" aria-hidden="true" /> Quick Add
         </button>
       </div>
     </div>
