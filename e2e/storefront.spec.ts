@@ -43,10 +43,14 @@ test.describe('Storefront Full E2E User Journey & Interactions', () => {
       await menLink.click();
       await expect(page).toHaveURL(/\/men/);
     } else {
-      // Desktop nav links
-      const menLink = page.getByRole('banner').getByRole('link', { name: /^men/i });
-      await expect(menLink).toBeVisible();
-      await menLink.click();
+      // Desktop nav links: open MEN mega-menu via trigger button and navigate via Shop All Men
+      const menTrigger = page.getByRole('banner').getByRole('button', { name: /^men/i });
+      await expect(menTrigger).toBeVisible();
+      await menTrigger.click();
+
+      const shopAllMen = page.getByRole('link', { name: /shop all men/i });
+      await expect(shopAllMen).toBeVisible();
+      await shopAllMen.click();
       await expect(page).toHaveURL(/\/men/);
     }
   });
