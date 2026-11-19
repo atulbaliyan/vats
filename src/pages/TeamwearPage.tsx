@@ -156,10 +156,11 @@ export const TeamwearPage: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                    <label htmlFor="teamwear-name" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                       Your Full Name *
                     </label>
                     <input
+                      id="teamwear-name"
                       type="text"
                       required
                       value={form.name}
@@ -170,10 +171,11 @@ export const TeamwearPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                    <label htmlFor="teamwear-org" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                       Organization / Club / School *
                     </label>
                     <input
+                      id="teamwear-org"
                       type="text"
                       required
                       value={form.organization}
@@ -186,10 +188,11 @@ export const TeamwearPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                    <label htmlFor="teamwear-email" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                       Email Address *
                     </label>
                     <input
+                      id="teamwear-email"
                       type="email"
                       required
                       value={form.email}
@@ -200,10 +203,11 @@ export const TeamwearPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                    <label htmlFor="teamwear-phone" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                       Phone Number *
                     </label>
                     <input
+                      id="teamwear-phone"
                       type="tel"
                       required
                       value={form.phone}

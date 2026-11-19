@@ -125,13 +125,15 @@ export const ProductDetailPage: React.FC = () => {
 
             {/* Thumbnail Selectors */}
             {product.images.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="flex gap-3 overflow-x-auto pb-2" role="group" aria-label="Product image gallery thumbnails">
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => setActiveImage(img)}
-                    className={`w-20 h-24 rounded-sm overflow-hidden border-2 transition-all flex-shrink-0 ${
+                    aria-label={`View product image angle ${idx + 1}`}
+                    aria-pressed={activeImage === img}
+                    className={`w-20 h-24 rounded-sm overflow-hidden border-2 transition-all flex-shrink-0 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none ${
                       activeImage === img ? 'border-vats-lime scale-100' : 'border-vats-border opacity-60 hover:opacity-100'
                     }`}
                   >

@@ -62,28 +62,33 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
   );
 
   return (
-    <div
+    <article
       className="group relative flex flex-col bg-vats-surface border border-vats-border rounded-sm overflow-hidden transition-all duration-300 hover:border-vats-muted/80 hover:shadow-xl"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      aria-label={`${product.name}, ${formatCurrency(product.price)}`}
     >
       {/* Product Image Frame */}
-      <Link
-        to={`/product/${product.slug}`}
-        className="relative aspect-[3/4] w-full overflow-hidden bg-vats-charcoal block select-none"
-      >
-        <img
-          src={isHovered ? secondaryImage : primaryImage}
-          alt={product.name}
-          width={400}
-          height={533}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
-        />
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-vats-charcoal block select-none">
+        <Link
+          to={`/product/${product.slug}`}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="block w-full h-full"
+        >
+          <img
+            src={isHovered ? secondaryImage : primaryImage}
+            alt=""
+            width={400}
+            height={533}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
+          />
+        </Link>
 
         {/* Badges Overlay */}
-        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10 pointer-events-none">
           {product.isNew && (
             <span className="bg-white text-vats-black text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-sm tracking-wider shadow">
               NEW
@@ -117,7 +122,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
         </button>
 
         {/* Hover Action Drawer (Desktop) */}
-        <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-vats-black/95 via-vats-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 hidden sm:flex items-center gap-2">
+        <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-vats-black/95 via-vats-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 hidden sm:flex items-center gap-2 z-10">
           <button
             type="button"
             onClick={handleQuickAdd}
@@ -149,7 +154,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
             <Eye className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
-      </Link>
+      </div>
 
       {/* Product Content Details */}
       <div className="p-4 flex-1 flex flex-col justify-between space-y-2">
@@ -177,18 +182,19 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
         {/* Color swatches & Pricing */}
         <div className="pt-2 border-t border-vats-border/50 flex items-center justify-between">
           {/* Colors */}
-          <div className="flex items-center gap-1.5" aria-label="Available Colors">
+          <div className="flex items-center gap-1.5" role="group" aria-label="Available Colors">
             {product.colors.slice(0, 3).map((c, i) => (
               <span
                 key={i}
-                className="w-3 h-3 rounded-full border border-vats-border"
+                role="img"
+                className="w-3 h-3 rounded-full border border-vats-border inline-block"
                 style={{ backgroundColor: c.hex }}
                 title={c.name}
                 aria-label={c.name}
               />
             ))}
             {product.colors.length > 3 && (
-              <span className="text-[10px] text-vats-muted font-mono">
+              <span className="text-[10px] text-vats-muted font-mono" role="img" aria-label={`${product.colors.length - 3} more colors`}>
                 +{product.colors.length - 3}
               </span>
             )}
@@ -217,7 +223,7 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
           <ShoppingBag className="w-3.5 h-3.5 text-vats-lime" aria-hidden="true" /> Quick Add
         </button>
       </div>
-    </div>
+    </article>
   );
 };
 

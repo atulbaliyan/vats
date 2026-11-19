@@ -108,7 +108,7 @@ export const QuickViewModal: React.FC = () => {
 
             {/* Rating */}
             <div className="flex items-center gap-2 mt-2 text-xs">
-              <div className="flex items-center text-vats-lime" aria-label={`Rating: ${product.rating} out of 5 stars`}>
+              <div className="flex items-center text-vats-lime" role="img" aria-label={`Rating: ${product.rating} out of 5 stars`}>
                 <Star className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
                 <span className="font-bold ml-1 font-mono">{product.rating}</span>
               </div>

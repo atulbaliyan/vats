@@ -166,10 +166,11 @@ export const CheckoutPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                  <label htmlFor="checkout-full-name" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                     Full Name *
                   </label>
                   <input
+                    id="checkout-full-name"
                     type="text"
                     required
                     value={address.fullName}
@@ -179,10 +180,11 @@ export const CheckoutPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                  <label htmlFor="checkout-email" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                     Email Address *
                   </label>
                   <input
+                    id="checkout-email"
                     type="email"
                     required
                     value={address.email}
@@ -194,10 +196,11 @@ export const CheckoutPage: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                  <label htmlFor="checkout-phone" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                     Phone (with WhatsApp update) *
                   </label>
                   <input
+                    id="checkout-phone"
                     type="tel"
                     required
                     value={address.phone}
@@ -207,10 +210,11 @@ export const CheckoutPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                  <label htmlFor="checkout-pincode" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                     PIN Code *
                   </label>
                   <input
+                    id="checkout-pincode"
                     type="text"
                     required
                     value={address.pincode}
@@ -221,10 +225,11 @@ export const CheckoutPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                <label htmlFor="checkout-street" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                   Street Address / Flat / Building *
                 </label>
                 <input
+                  id="checkout-street"
                   type="text"
                   required
                   value={address.street}
@@ -235,10 +240,11 @@ export const CheckoutPage: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                  <label htmlFor="checkout-city" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                     City *
                   </label>
                   <input
+                    id="checkout-city"
                     type="text"
                     required
                     value={address.city}
@@ -248,10 +254,11 @@ export const CheckoutPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
+                  <label htmlFor="checkout-state" className="text-xs font-bold uppercase tracking-wider text-vats-muted block mb-1">
                     State *
                   </label>
                   <input
+                    id="checkout-state"
                     type="text"
                     required
                     value={address.state}

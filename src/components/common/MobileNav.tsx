@@ -8,7 +8,6 @@ import { AccessibleDrawer } from '../ui/Dialog';
 export const MobileNav: React.FC = () => {
   const isMobileMenuOpen = useUIStore((s) => s.isMobileMenuOpen);
   const closeMobileMenu = useUIStore((s) => s.closeMobileMenu);
-  const openSearch = useUIStore((s) => s.openSearch);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const toggleExpand = (title: string) => {
@@ -34,9 +33,11 @@ export const MobileNav: React.FC = () => {
           to="/"
           onClick={handleLinkClick}
           className="flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
-          aria-label="VATS SPORTS Home"
         >
-          <div className="w-7 h-7 bg-vats-charcoal border border-vats-border flex items-center justify-center font-display text-lg text-vats-lime">
+          <div
+            className="w-7 h-7 bg-vats-charcoal border border-vats-border flex items-center justify-center font-display text-lg text-vats-lime"
+            aria-hidden="true"
+          >
             <span className="skew-x-[-12deg]">V</span>
           </div>
           <span className="font-display text-2xl tracking-wider text-vats-offwhite">
@@ -55,18 +56,15 @@ export const MobileNav: React.FC = () => {
 
       {/* Search Quick Bar */}
       <div className="p-4 border-b border-vats-border">
-        <button
-          type="button"
-          onClick={() => {
-            closeMobileMenu();
-            openSearch();
-          }}
+        <Link
+          to="/search"
+          onClick={handleLinkClick}
           className="w-full flex items-center gap-3 px-4 py-2.5 bg-vats-black border border-vats-border text-vats-muted text-sm rounded-sm hover:border-vats-muted focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none transition-colors"
           aria-label="Search catalog for gear, jerseys, and tees"
         >
           <Search className="w-4 h-4 text-vats-lime" aria-hidden="true" />
           <span>Search gear, jerseys, tees...</span>
-        </button>
+        </Link>
       </div>
 
       {/* Navigation Accordion */}

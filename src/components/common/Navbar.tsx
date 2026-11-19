@@ -15,7 +15,6 @@ export const Navbar: React.FC = () => {
   const openCartDrawer = useCartStore((s) => s.openDrawer);
   const isMobileMenuOpen = useUIStore((s) => s.isMobileMenuOpen);
   const wishlistCount = useWishlistStore((s) => s.wishlistIds.length);
-  const openSearch = useUIStore((s) => s.openSearch);
   const toggleMobileMenu = useUIStore((s) => s.toggleMobileMenu);
 
   const isHome = location.pathname === '/';
@@ -39,6 +38,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <header
+      role="banner"
       className={`sticky top-0 z-40 w-full transition-all duration-300 ${
         isScrolled || !isHome
           ? 'bg-vats-black/90 backdrop-blur-md border-b border-vats-border shadow-2xl py-3.5'
@@ -62,10 +62,12 @@ export const Navbar: React.FC = () => {
             <Link
               to="/"
               className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-vats-lime rounded-sm"
-              aria-label="VATS SPORTS Home"
             >
               {/* Dynamic Logo Symbol */}
-              <div className="w-8 h-8 bg-vats-charcoal border border-vats-border flex items-center justify-center font-display text-xl text-vats-lime group-hover:border-vats-lime transition-colors">
+              <div
+                className="w-8 h-8 bg-vats-charcoal border border-vats-border flex items-center justify-center font-display text-xl text-vats-lime group-hover:border-vats-lime transition-colors"
+                aria-hidden="true"
+              >
                 <span className="skew-x-[-12deg]">V</span>
               </div>
               <div className="flex flex-col">
@@ -189,15 +191,14 @@ export const Navbar: React.FC = () => {
 
           {/* Right: Actions (Search, Wishlist, Cart) */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <button
-              type="button"
-              onClick={openSearch}
+            <Link
+              to="/search"
               className="p-2 text-vats-offwhite hover:text-vats-lime transition-colors relative focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
               aria-label="Search store products"
               title="Search products"
             >
               <Search className="w-5 h-5" />
-            </button>
+            </Link>
 
             <Link
               to="/wishlist"

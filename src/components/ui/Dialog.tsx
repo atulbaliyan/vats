@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import clsx from 'clsx';
@@ -31,6 +31,14 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
   maxWidthClassName = 'max-w-3xl',
   showCloseButton = true,
 }) => {
+  const lastActiveElementRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      lastActiveElementRef.current = document.activeElement as HTMLElement | null;
+    }
+  }, [isOpen]);
+
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogPrimitive.Portal>
@@ -46,6 +54,12 @@ export const AccessibleModal: React.FC<AccessibleModalProps> = ({
               maxWidthClassName
             )}
             aria-describedby={description ? undefined : undefined}
+            onCloseAutoFocus={(e) => {
+              if (lastActiveElementRef.current && typeof lastActiveElementRef.current.focus === 'function') {
+                e.preventDefault();
+                lastActiveElementRef.current.focus();
+              }
+            }}
           >
             {/* Accessible screen-reader title */}
             <DialogPrimitive.Title className="sr-only">
@@ -98,6 +112,14 @@ export const AccessibleDrawer: React.FC<AccessibleDrawerProps> = ({
   children,
   widthClassName = 'max-w-md',
 }) => {
+  const lastActiveElementRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      lastActiveElementRef.current = document.activeElement as HTMLElement | null;
+    }
+  }, [isOpen]);
+
   return (
     <DialogPrimitive.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogPrimitive.Portal>
@@ -121,6 +143,12 @@ export const AccessibleDrawer: React.FC<AccessibleDrawerProps> = ({
                 : 'data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left',
               widthClassName
             )}
+            onCloseAutoFocus={(e) => {
+              if (lastActiveElementRef.current && typeof lastActiveElementRef.current.focus === 'function') {
+                e.preventDefault();
+                lastActiveElementRef.current.focus();
+              }
+            }}
           >
             <DialogPrimitive.Title className="sr-only">
               {title}
