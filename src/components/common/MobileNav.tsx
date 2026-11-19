@@ -4,6 +4,7 @@ import { X, ChevronDown, ChevronRight, Heart, Search } from 'lucide-react';
 import { NAV_LINKS } from '../../data/navigation';
 import { useUIStore } from '../../store/useUIStore';
 import { AccessibleDrawer } from '../ui/Dialog';
+import { BrandLogo } from './BrandLogo';
 
 export const MobileNav: React.FC = () => {
   const isMobileMenuOpen = useUIStore((s) => s.isMobileMenuOpen);
@@ -32,17 +33,15 @@ export const MobileNav: React.FC = () => {
         <Link
           to="/"
           onClick={handleLinkClick}
-          className="flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm"
+          className="flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm transition-transform duration-200 active:scale-95"
+          aria-label="VATS SPORTS"
         >
-          <div
-            className="w-7 h-7 bg-vats-charcoal border border-vats-border flex items-center justify-center font-display text-lg text-vats-lime"
-            aria-hidden="true"
-          >
-            <span className="skew-x-[-12deg]">V</span>
-          </div>
-          <span className="font-display text-2xl tracking-wider text-vats-offwhite">
-            VATS<span className="text-vats-lime">.</span>SPORTS
-          </span>
+          <BrandLogo
+            variant="full"
+            theme="dark"
+            className="h-7 sm:h-8 w-auto"
+            alt="VATS SPORTS"
+          />
         </Link>
         <button
           type="button"
