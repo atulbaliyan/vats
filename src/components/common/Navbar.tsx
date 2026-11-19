@@ -6,6 +6,7 @@ import { useCartStore } from '../../store/useCartStore';
 import { useWishlistStore } from '../../store/useWishlistStore';
 import { useUIStore } from '../../store/useUIStore';
 import { useMegaMenu } from '../../hooks/useMegaMenu';
+import { BrandLogo } from './BrandLogo';
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -74,23 +75,16 @@ export const Navbar: React.FC = () => {
 
             <Link
               to="/"
-              className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-vats-lime rounded-sm"
+              className="flex items-center gap-2 group focus:outline-none focus-visible:ring-2 focus-visible:ring-vats-lime rounded-sm transition-transform duration-200 active:scale-95"
+              aria-label="VATS SPORTS"
             >
-              {/* Dynamic Logo Symbol */}
-              <div
-                className="w-8 h-8 bg-vats-charcoal border border-vats-border flex items-center justify-center font-display text-xl text-vats-lime group-hover:border-vats-lime transition-colors"
-                aria-hidden="true"
-              >
-                <span className="skew-x-[-12deg]">V</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display text-2xl sm:text-3xl tracking-wider leading-none text-vats-offwhite group-hover:text-white transition-colors">
-                  VATS<span className="text-vats-lime">.</span>SPORTS
-                </span>
-                <span className="text-[9px] uppercase tracking-ultra text-vats-muted font-semibold leading-none">
-                  BEYOND LIMITS
-                </span>
-              </div>
+              <BrandLogo
+                variant="full"
+                theme="dark"
+                className="h-8 sm:h-9 w-auto"
+                priority
+                alt="VATS SPORTS"
+              />
             </Link>
           </div>
 
