@@ -19,13 +19,13 @@ export const Navbar: React.FC = () => {
 
   const {
     activeMenu,
-    openMode,
     navRef,
     registerTriggerRef,
     closeMenu,
-    handleTriggerClick,
     handleItemPointerEnter,
     handleItemPointerLeave,
+    handleItemFocus,
+    handleItemBlur,
     handleTriggerKeyDown,
     handleSubmenuLinkClick,
   } = useMegaMenu({ hoverCloseDelayMs: 3000 });
@@ -110,55 +110,31 @@ export const Navbar: React.FC = () => {
                   className="relative"
                   onMouseEnter={() => hasSections && handleItemPointerEnter(nav.title)}
                   onMouseLeave={() => hasSections && handleItemPointerLeave()}
-                  onFocus={() => hasSections && handleItemPointerEnter(nav.title)}
-                  onBlur={(e) => {
-                    if (hasSections && !e.currentTarget.contains(e.relatedTarget as Node)) {
-                      if (openMode === 'hover') {
-                        closeMenu();
-                      }
-                    }
-                  }}
+                  onFocus={() => hasSections && handleItemFocus(nav.title)}
+                  onBlur={hasSections ? handleItemBlur : undefined}
                 >
-                  {hasSections ? (
-                    <button
-                      type="button"
-                      id={triggerId}
-                      ref={registerTriggerRef(nav.title)}
-                      onClick={() => handleTriggerClick(nav.title)}
-                      onKeyDown={(e) => handleTriggerKeyDown(e, nav.title)}
-                      aria-expanded={isOpen}
-                      aria-haspopup="true"
-                      aria-controls={isOpen ? menuId : undefined}
-                      className={`px-4 py-2 text-sm font-semibold tracking-wider uppercase transition-colors relative flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm ${
-                        isOpen || isCurrentRoute
-                          ? 'text-vats-lime'
-                          : 'text-vats-offwhite/90 hover:text-vats-lime'
-                      }`}
-                    >
-                      {nav.title}
-                      {nav.badge && (
-                        <span className="bg-vats-lime text-vats-black text-[9px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
-                          {nav.badge}
-                        </span>
-                      )}
-                    </button>
-                  ) : (
-                    <Link
-                      to={nav.href}
-                      className={`px-4 py-2 text-sm font-semibold tracking-wider uppercase transition-colors relative flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm ${
-                        isCurrentRoute
-                          ? 'text-vats-lime'
-                          : 'text-vats-offwhite/90 hover:text-vats-lime'
-                      }`}
-                    >
-                      {nav.title}
-                      {nav.badge && (
-                        <span className="bg-vats-lime text-vats-black text-[9px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
-                          {nav.badge}
-                        </span>
-                      )}
-                    </Link>
-                  )}
+                  <Link
+                    to={nav.href}
+                    id={hasSections ? triggerId : undefined}
+                    ref={hasSections ? registerTriggerRef(nav.title) : undefined}
+                    onClick={() => closeMenu()}
+                    onKeyDown={(e) => hasSections && handleTriggerKeyDown(e, nav.title)}
+                    aria-expanded={hasSections ? isOpen : undefined}
+                    aria-haspopup={hasSections ? 'true' : undefined}
+                    aria-controls={hasSections && isOpen ? menuId : undefined}
+                    className={`px-4 py-2 text-sm font-semibold tracking-wider uppercase transition-colors relative flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-vats-lime focus-visible:outline-none rounded-sm ${
+                      isOpen || isCurrentRoute
+                        ? 'text-vats-lime'
+                        : 'text-vats-offwhite/90 hover:text-vats-lime'
+                    }`}
+                  >
+                    {nav.title}
+                    {nav.badge && (
+                      <span className="bg-vats-lime text-vats-black text-[9px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-wider">
+                        {nav.badge}
+                      </span>
+                    )}
+                  </Link>
 
                   {/* Desktop Mega Menu Dropdown */}
                   {hasSections && isOpen && (
