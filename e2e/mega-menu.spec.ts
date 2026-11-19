@@ -1,23 +1,23 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Mega-Menu Desktop Interaction & Mouse Movement Verification', () => {
-  test('mouse movement from navigation trigger to dropdown preserves open state without flickering', async ({ page, isMobile }) => {
+test.describe('Mega-Menu Desktop Hover & Link Navigation Verification', () => {
+  test('mouse movement from navigation link to dropdown preserves open state without flickering', async ({ page, isMobile }) => {
     const isSmallScreen = isMobile || (page.viewportSize()?.width ?? 1440) < 1024;
     test.skip(isSmallScreen, 'Desktop mega-menu interaction is desktop only');
 
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    const menTrigger = page.getByRole('banner').getByRole('button', { name: /^men/i });
-    await expect(menTrigger).toBeVisible();
+    const menLink = page.getByRole('banner').getByRole('link', { name: /^men/i });
+    await expect(menLink).toBeVisible();
 
-    // 1. Initial hover opens mega-menu
-    await menTrigger.hover();
-    const megaMenu = page.getByRole('region', { name: /men subcategories navigation/i });
+    // 1. Initial hover opens mega-menu without click
+    await menLink.hover();
+    const megaMenu = page.getByRole('region', { name: /^men subcategories navigation/i });
     await expect(megaMenu).toBeVisible();
 
     // 2. Obtain real geometry and move mouse across the boundary into dropdown
-    const triggerBox = await menTrigger.boundingBox();
+    const triggerBox = await menLink.boundingBox();
     const menuBox = await megaMenu.boundingBox();
     expect(triggerBox).not.toBeNull();
     expect(menuBox).not.toBeNull();
@@ -45,29 +45,51 @@ test.describe('Mega-Menu Desktop Interaction & Mouse Movement Verification', () 
     await expect(megaMenu).not.toBeVisible();
   });
 
-  test('clicking navigation trigger pins menu and outside click closes it', async ({ page, isMobile }) => {
+  test('clicking top-level category navigates directly to category page', async ({ page, isMobile }) => {
     const isSmallScreen = isMobile || (page.viewportSize()?.width ?? 1440) < 1024;
     test.skip(isSmallScreen, 'Desktop mega-menu interaction is desktop only');
 
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    const womenTrigger = page.getByRole('banner').getByRole('button', { name: /^women/i });
-    await expect(womenTrigger).toBeVisible();
+    // Clicking MEN directly navigates to /men
+    const menLink = page.getByRole('banner').getByRole('link', { name: /^men/i });
+    await expect(menLink).toBeVisible();
+    await menLink.click();
+    await expect(page).toHaveURL(/\/men/);
 
-    // Click trigger to pin menu
-    await womenTrigger.click();
-    const megaMenu = page.getByRole('region', { name: /women subcategories navigation/i });
+    // Clicking WOMEN directly navigates to /women
+    const womenLink = page.getByRole('banner').getByRole('link', { name: /^women/i });
+    await expect(womenLink).toBeVisible();
+    await womenLink.click();
+    await expect(page).toHaveURL(/\/women/);
+
+    // Clicking SPORTS directly navigates to /sports
+    const sportsLink = page.getByRole('banner').getByRole('link', { name: /^sports/i });
+    await expect(sportsLink).toBeVisible();
+    await sportsLink.click();
+    await expect(page).toHaveURL(/\/sports/);
+  });
+
+  test('clicking outside closes the dropdown without blocking clicked element', async ({ page, isMobile }) => {
+    const isSmallScreen = isMobile || (page.viewportSize()?.width ?? 1440) < 1024;
+    test.skip(isSmallScreen, 'Desktop mega-menu interaction is desktop only');
+
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    const menLink = page.getByRole('banner').getByRole('link', { name: /^men/i });
+    await menLink.hover();
+
+    const megaMenu = page.getByRole('region', { name: /^men subcategories navigation/i });
     await expect(megaMenu).toBeVisible();
 
-    // Move mouse far away to empty body space
-    await page.mouse.move(10, 500);
-    // Wait 500ms and verify menu remains open because it was opened via click
-    await page.waitForTimeout(500);
-    await expect(megaMenu).toBeVisible();
+    // Click outside on the Search button in the banner
+    const searchBtn = page.getByRole('banner').getByRole('link', { name: /search store products/i });
+    await searchBtn.click();
 
-    // Click outside in body area
-    await page.mouse.click(10, 500);
+    // Dropdown is closed and navigation to /search occurred
+    await expect(page).toHaveURL(/\/search/);
     await expect(megaMenu).not.toBeVisible();
   });
 });

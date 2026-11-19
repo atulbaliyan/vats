@@ -1,24 +1,19 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 
-export type MenuOpenMode = 'hover' | 'click' | null;
-
 export interface UseMegaMenuOptions {
   hoverCloseDelayMs?: number;
 }
 
 export function useMegaMenu({ hoverCloseDelayMs = 3000 }: UseMegaMenuOptions = {}) {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [openMode, setOpenMode] = useState<MenuOpenMode>(null);
 
   const activeMenuRef = useRef<string | null>(null);
   activeMenuRef.current = activeMenu;
 
-  const openModeRef = useRef<MenuOpenMode>(null);
-  openModeRef.current = openMode;
-
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const triggerRefs = useRef<Map<string, HTMLElement>>(new Map());
   const navRef = useRef<HTMLElement | null>(null);
+  const preventFocusOpenRef = useRef(false);
 
   const clearCloseTimer = useCallback(() => {
     if (closeTimerRef.current !== null) {
@@ -27,73 +22,57 @@ export function useMegaMenu({ hoverCloseDelayMs = 3000 }: UseMegaMenuOptions = {
     }
   }, []);
 
-  const openMenu = useCallback((key: string, mode: 'hover' | 'click') => {
+  const openMenu = useCallback((key: string) => {
     clearCloseTimer();
     setActiveMenu(key);
-    setOpenMode(mode);
   }, [clearCloseTimer]);
 
-  const closeMenu = useCallback((restoreFocusTo?: string) => {
+  const closeMenu = useCallback((restoreFocusToKey?: string) => {
     clearCloseTimer();
-    const menuToRestore = restoreFocusTo || activeMenuRef.current;
     setActiveMenu(null);
-    setOpenMode(null);
 
-    if (menuToRestore) {
-      const triggerEl = triggerRefs.current.get(menuToRestore);
+    if (restoreFocusToKey) {
+      const triggerEl = triggerRefs.current.get(restoreFocusToKey);
       if (triggerEl) {
+        preventFocusOpenRef.current = true;
         triggerEl.focus();
       }
     }
   }, [clearCloseTimer]);
 
-  const handleTriggerClick = useCallback((key: string) => {
-    clearCloseTimer();
-    if (activeMenuRef.current === key) {
-      if (openModeRef.current === 'click') {
-        // Clicking same menu again closes it
-        closeMenu();
-      } else {
-        // Upgrade from hover to click pinned (keeps open indefinitely)
-        setOpenMode('click');
-      }
-    } else {
-      // Switching to another menu in click mode
-      openMenu(key, 'click');
-    }
-  }, [clearCloseTimer, closeMenu, openMenu]);
-
   const handleItemPointerEnter = useCallback((key: string) => {
-    clearCloseTimer();
-    // If a menu was opened via click, hovering neighboring items does not hijack it
-    if (openModeRef.current === 'click') {
-      return;
-    }
-    openMenu(key, 'hover');
-  }, [clearCloseTimer, openMenu]);
+    openMenu(key);
+  }, [openMenu]);
 
   const handleItemPointerLeave = useCallback(() => {
-    // Click-opened menus must not be closed by hover-leave
-    if (openModeRef.current === 'click') {
-      return;
-    }
     clearCloseTimer();
     closeTimerRef.current = setTimeout(() => {
       setActiveMenu(null);
-      setOpenMode(null);
       closeTimerRef.current = null;
     }, hoverCloseDelayMs);
   }, [clearCloseTimer, hoverCloseDelayMs]);
 
+  const handleItemFocus = useCallback((key: string) => {
+    if (preventFocusOpenRef.current) {
+      preventFocusOpenRef.current = false;
+      return;
+    }
+    openMenu(key);
+  }, [openMenu]);
+
+  const handleItemBlur = useCallback((e: React.FocusEvent<HTMLDivElement>) => {
+    // If focus moves to an element outside this item container, close dropdown
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      closeMenu();
+    }
+  }, [closeMenu]);
+
   const handleTriggerKeyDown = useCallback((e: React.KeyboardEvent, key: string) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleTriggerClick(key);
-    } else if (e.key === 'Escape') {
+    if (e.key === 'Escape') {
       e.preventDefault();
       closeMenu(key);
     }
-  }, [handleTriggerClick, closeMenu]);
+  }, [closeMenu]);
 
   const handleSubmenuLinkClick = useCallback(() => {
     closeMenu();
@@ -107,7 +86,7 @@ export function useMegaMenu({ hoverCloseDelayMs = 3000 }: UseMegaMenuOptions = {
     }
   }, []);
 
-  // Global click outside listener
+  // Global click outside listener: closes dropdown without preventing or stopping event propagation
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (!activeMenuRef.current) return;
@@ -148,14 +127,14 @@ export function useMegaMenu({ hoverCloseDelayMs = 3000 }: UseMegaMenuOptions = {
 
   return {
     activeMenu,
-    openMode,
     navRef,
     registerTriggerRef,
     openMenu,
     closeMenu,
-    handleTriggerClick,
     handleItemPointerEnter,
     handleItemPointerLeave,
+    handleItemFocus,
+    handleItemBlur,
     handleTriggerKeyDown,
     handleSubmenuLinkClick,
   };
