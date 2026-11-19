@@ -86,6 +86,7 @@ export const NAV_LINKS: NavCategory[] = [
       {
         heading: 'Field & Pitch',
         items: [
+          { label: 'Shop All Sports', href: '/sports' },
           { label: 'Cricket Match & Training', href: '/sports?sport=Cricket', tag: 'Hot' },
           { label: 'Football & Futsal', href: '/sports?sport=Football' },
           { label: 'Badminton & Racket', href: '/sports' },
@@ -115,6 +116,7 @@ export const NAV_LINKS: NavCategory[] = [
       {
         heading: 'Drops & Editions',
         items: [
+          { label: 'Shop All Collections', href: '/collections' },
           { label: '"Beyond Limits" Heavyweights', href: '/collections', tag: 'New Drop' },
           { label: 'Velocity Bonded Tech', href: '/collections' },
           { label: 'All Black "Stealth" Capsule', href: '/collections' },
