@@ -39,8 +39,11 @@ export const CategoryGrid: React.FC = () => {
               <img
                 src={cat.image}
                 alt={cat.title}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-70 group-hover:opacity-85"
+                width={600}
+                height={800}
                 loading="lazy"
+                decoding="async"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-70 group-hover:opacity-85"
               />
 
               {/* Overlay Gradient */}

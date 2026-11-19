@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Eye, ShoppingBag, Check } from 'lucide-react';
 import { Product } from '../../types';
@@ -11,7 +11,7 @@ interface ProductCardProps {
   product: Product;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCardComponent: React.FC<ProductCardProps> = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isQuickAdded, setIsQuickAdded] = useState(false);
 
@@ -25,33 +25,41 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const primaryImage = product.images[0];
   const secondaryImage = product.images[1] || product.images[0];
 
-  const handleWishlistClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const added = toggleWishlist(product.id);
-    if (added) {
-      addToast('Saved to Wishlist', product.name, 'success');
-    } else {
-      addToast('Removed from Wishlist', product.name, 'info');
-    }
-  };
+  const handleWishlistClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const added = toggleWishlist(product.id);
+      if (added) {
+        addToast('Saved to Wishlist', product.name, 'success');
+      } else {
+        addToast('Removed from Wishlist', product.name, 'info');
+      }
+    },
+    [product.id, product.name, toggleWishlist, addToast]
+  );
 
-  const handleQuickAdd = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // Default to medium size or first available size
-    const size = product.sizes.includes('M') ? 'M' : product.sizes[0];
-    addItem(product, product.defaultColor, size, 1);
-    setIsQuickAdded(true);
-    addToast('Added to bag!', `${product.name} (${size})`, 'success');
-    setTimeout(() => setIsQuickAdded(false), 1200);
-  };
+  const handleQuickAdd = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const size = product.sizes.includes('M') ? 'M' : product.sizes[0];
+      addItem(product, product.defaultColor, size, 1);
+      setIsQuickAdded(true);
+      addToast('Added to bag!', `${product.name} (${size})`, 'success');
+      setTimeout(() => setIsQuickAdded(false), 1200);
+    },
+    [product, addItem, addToast]
+  );
 
-  const handleQuickView = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openQuickView(product);
-  };
+  const handleQuickView = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openQuickView(product);
+    },
+    [product, openQuickView]
+  );
 
   return (
     <div
@@ -67,8 +75,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <img
           src={isHovered ? secondaryImage : primaryImage}
           alt={product.name}
-          className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
+          width={400}
+          height={533}
           loading="lazy"
+          decoding="async"
+          className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105"
         />
 
         {/* Badges Overlay */}
@@ -90,7 +101,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
         </div>
 
-        {/* Wishlist Button (Always visible / accessible) */}
+        {/* Wishlist Button */}
         <button
           type="button"
           onClick={handleWishlistClick}
@@ -99,7 +110,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               ? 'bg-red-500 text-white shadow-lg'
               : 'bg-vats-black/60 text-vats-offwhite hover:text-red-400 hover:bg-vats-black backdrop-blur-sm'
           }`}
-          aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-label={isInWishlist ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           title="Save to wishlist"
         >
           <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-current' : ''}`} />
@@ -132,7 +143,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             onClick={handleQuickView}
             className="p-2.5 bg-vats-charcoal hover:bg-vats-border text-vats-offwhite rounded-sm transition-colors border border-vats-border"
             title="Quick View Modal"
-            aria-label="Quick View Product"
+            aria-label={`Quick View ${product.name}`}
           >
             <Eye className="w-4 h-4" />
           </button>
@@ -165,13 +176,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Color swatches & Pricing */}
         <div className="pt-2 border-t border-vats-border/50 flex items-center justify-between">
           {/* Colors */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5" aria-label="Available Colors">
             {product.colors.slice(0, 3).map((c, i) => (
               <span
                 key={i}
                 className="w-3 h-3 rounded-full border border-vats-border"
                 style={{ backgroundColor: c.hex }}
                 title={c.name}
+                aria-label={c.name}
               />
             ))}
             {product.colors.length > 3 && (
@@ -206,3 +218,5 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     </div>
   );
 };
+
+export const ProductCard = memo(ProductCardComponent);

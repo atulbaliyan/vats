@@ -110,6 +110,10 @@ export const ProductDetailPage: React.FC = () => {
               <img
                 src={activeImage}
                 alt={product.name}
+                width={800}
+                height={1067}
+                loading="eager"
+                decoding="async"
                 className="w-full h-full object-cover transition-all duration-500"
               />
               {discount > 0 && (
@@ -131,7 +135,15 @@ export const ProductDetailPage: React.FC = () => {
                       activeImage === img ? 'border-vats-lime scale-100' : 'border-vats-border opacity-60 hover:opacity-100'
                     }`}
                   >
-                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <img
+                      src={img}
+                      alt=""
+                      width={80}
+                      height={96}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>
